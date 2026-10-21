@@ -30,6 +30,8 @@ BEGIN
     AND te.id_festival = f.id_festival
     AND f.estado = 'PUBLICADO'
     AND te.aforo_disponible >= p_cantidad
+    AND f.fecha_fin >= fn_dia_festival(now())
+    AND (te.fecha IS NULL OR te.fecha >= fn_dia_festival(now()))
     RETURNING te.precio_actual INTO v_precio;
 
     IF NOT FOUND THEN

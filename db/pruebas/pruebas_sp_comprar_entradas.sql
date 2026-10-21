@@ -20,6 +20,12 @@ DECLARE
     v_aforo      INT;
     v_n          INT;
     v_n2         INT;
+    v_hoy        DATE;
+    v_fest_fin   BIGINT;   -- publicado pero ya terminado
+    v_fest_curso BIGINT;   -- publicado y en curso (ayer a mañana)
+    v_tipo_fin   BIGINT;   -- entrada del festival terminado
+    v_tipo_pasado BIGINT;  -- entrada válida solo para ayer
+    v_tipo_futuro BIGINT;  -- entrada válida solo para mañana
     v_ok         INT := 0;
     v_falla      INT := 0;
 BEGIN
@@ -58,6 +64,23 @@ BEGIN
     VALUES (v_fest_pub, 'TEST VIP', 10000, 10, 10) RETURNING id_tipo_entrada INTO v_tipo_b;
     INSERT INTO tipo_entrada (id_festival, nombre_tipo, precio_actual, aforo_total, aforo_disponible)
     VALUES (v_fest_bor, 'TEST Borrador', 10000, 5, 5) RETURNING id_tipo_entrada INTO v_tipo_bor;
+
+    -- Fechas relativas a hoy (día de Chile, como lo define fn_dia_festival)
+    v_hoy := fn_dia_festival(now());
+
+    INSERT INTO festival (id_usuario_productor, id_recinto, nombre, fecha_inicio, fecha_fin, estado)
+    VALUES (v_productor, v_recinto, 'TEST Festival terminado', v_hoy - 2, v_hoy - 1, 'PUBLICADO')
+    RETURNING id_festival INTO v_fest_fin;
+    INSERT INTO festival (id_usuario_productor, id_recinto, nombre, fecha_inicio, fecha_fin, estado)
+    VALUES (v_productor, v_recinto, 'TEST Festival en curso', v_hoy - 1, v_hoy + 1, 'PUBLICADO')
+    RETURNING id_festival INTO v_fest_curso;
+
+    INSERT INTO tipo_entrada (id_festival, nombre_tipo, precio_actual, aforo_total, aforo_disponible)
+    VALUES (v_fest_fin, 'TEST Terminado', 10000, 5, 5) RETURNING id_tipo_entrada INTO v_tipo_fin;
+    INSERT INTO tipo_entrada (id_festival, nombre_tipo, precio_actual, aforo_total, aforo_disponible, fecha)
+    VALUES (v_fest_curso, 'TEST Dia pasado', 10000, 5, 5, v_hoy - 1) RETURNING id_tipo_entrada INTO v_tipo_pasado;
+    INSERT INTO tipo_entrada (id_festival, nombre_tipo, precio_actual, aforo_total, aforo_disponible, fecha)
+    VALUES (v_fest_curso, 'TEST Dia futuro', 10000, 5, 5, v_hoy + 1) RETURNING id_tipo_entrada INTO v_tipo_futuro;
 
     -- Caso 1: Pasar (aforo de tipo A: 3 -> 2)
     BEGIN
@@ -220,12 +243,61 @@ BEGIN
           FROM ticket t JOIN tipo_entrada te ON te.id_tipo_entrada = t.id_tipo_entrada
          WHERE te.id_festival = v_fest_pub AND length(t.codigo_unico) = 32;
         IF v_n = 6 AND v_n2 = 6 THEN
-            RAISE NOTICE 'OK    caso 11 (7 tickets, 7 códigos distintos)';
+            RAISE NOTICE 'OK    caso 11 (6 tickets, 6 códigos distintos)';
             v_ok := v_ok + 1;
         ELSE
             RAISE NOTICE 'FALLA caso 11: tickets=%, codigos distintos=%', v_n, v_n2;
             v_falla := v_falla + 1;
         END IF;
+    END;
+
+    -- Caso 12: Rechazo (festival publicado pero ya terminado)
+    BEGIN
+        CALL sp_comprar_entradas(v_asi_b, v_tipo_fin, 1, false, v_orden);
+        RAISE NOTICE 'FALLA caso 12: se vendió una entrada de un festival ya terminado';
+        v_falla := v_falla + 1;
+    EXCEPTION WHEN raise_exception THEN
+        SELECT aforo_disponible INTO v_aforo FROM tipo_entrada WHERE id_tipo_entrada = v_tipo_fin;
+        IF v_aforo = 5 THEN
+            RAISE NOTICE 'OK    caso 12 (festival ya terminado, aforo intacto) -> %', SQLERRM;
+            v_ok := v_ok + 1;
+        ELSE
+            RAISE NOTICE 'FALLA caso 12: el aforo cambió a %', v_aforo;
+            v_falla := v_falla + 1;
+        END IF;
+    END;
+
+    -- Caso 13: Rechazo (entrada de un día que ya pasó, aunque el festival siga en curso)
+    BEGIN
+        CALL sp_comprar_entradas(v_asi_b, v_tipo_pasado, 1, false, v_orden);
+        RAISE NOTICE 'FALLA caso 13: se vendió una entrada de un día pasado';
+        v_falla := v_falla + 1;
+    EXCEPTION WHEN raise_exception THEN
+        SELECT aforo_disponible INTO v_aforo FROM tipo_entrada WHERE id_tipo_entrada = v_tipo_pasado;
+        IF v_aforo = 5 THEN
+            RAISE NOTICE 'OK    caso 13 (entrada de un día pasado, aforo intacto) -> %', SQLERRM;
+            v_ok := v_ok + 1;
+        ELSE
+            RAISE NOTICE 'FALLA caso 13: el aforo cambió a %', v_aforo;
+            v_falla := v_falla + 1;
+        END IF;
+    END;
+
+    -- Caso 14: Pasar (entrada de un día futuro: se puede comprar por adelantado)
+    BEGIN
+        CALL sp_comprar_entradas(v_asi_c, v_tipo_futuro, 1, false, v_orden);
+        SELECT count(*) INTO v_n FROM ticket WHERE id_orden = v_orden;
+        SELECT aforo_disponible INTO v_aforo FROM tipo_entrada WHERE id_tipo_entrada = v_tipo_futuro;
+        IF v_n = 1 AND v_aforo = 4 THEN
+            RAISE NOTICE 'OK    caso 14 (entrada de un día futuro: compra por adelantado permitida)';
+            v_ok := v_ok + 1;
+        ELSE
+            RAISE NOTICE 'FALLA caso 14: tickets=%, aforo=%', v_n, v_aforo;
+            v_falla := v_falla + 1;
+        END IF;
+    EXCEPTION WHEN OTHERS THEN
+        RAISE NOTICE 'FALLA caso 14: se rechazó una entrada de un día futuro -> %', SQLERRM;
+        v_falla := v_falla + 1;
     END;
 
     RAISE NOTICE 'RESUMEN: % OK, % FALLA', v_ok, v_falla;
