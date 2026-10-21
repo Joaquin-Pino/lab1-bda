@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import cl.grupo3.lab1.model.Presentacion;
+import cl.grupo3.lab1.model.GrillaFila;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -83,6 +84,37 @@ public class PresentacionRepository {
 
     public int delete(Long id) {
         return jdbc.update("DELETE FROM presentacion WHERE id_presentacion = :id", new MapSqlParameterSource("id", id));
+    }
+
+    /**
+     * Grilla del día: todos los escenarios del recinto del festival
+     * El "día" se calcula con fn_dia_festival (fecha de Chile), igual que el resto del sistema.
+     */
+    public List<GrillaFila> grilla(Long idFestival, LocalDate fecha) {
+        String sql = """
+                SELECT e.id_escenario, e.nombre AS nombre_escenario,
+                       p.id_presentacion, p.id_artista, a.nombre AS nombre_artista, a.genero_musical,
+                       p.fecha_hora_inicio, p.fecha_hora_fin, p.estado
+                FROM festival f
+                JOIN escenario e ON e.id_recinto = f.id_recinto
+                LEFT JOIN presentacion p ON p.id_escenario = e.id_escenario
+                                        AND p.id_festival = f.id_festival
+                                        AND fn_dia_festival(p.fecha_hora_inicio) = :fecha
+                LEFT JOIN artista a ON a.id_artista = p.id_artista
+                WHERE f.id_festival = :idFestival
+                ORDER BY e.nombre, e.id_escenario, p.fecha_hora_inicio
+                """;
+        var params = new MapSqlParameterSource()
+                .addValue("idFestival", idFestival)
+                .addValue("fecha", fecha);
+        return jdbc.query(sql, params, PresentacionRepository::mapGrilla);
+    }
+
+    private static GrillaFila mapGrilla(ResultSet rs, int i) throws SQLException {
+        return new GrillaFila(rs.getLong("id_escenario"), rs.getString("nombre_escenario"),
+                rs.getObject("id_presentacion", Long.class), rs.getObject("id_artista", Long.class),
+                rs.getString("nombre_artista"), rs.getString("genero_musical"),
+                Fechas.leer(rs, "fecha_hora_inicio"), Fechas.leer(rs, "fecha_hora_fin"), rs.getString("estado"));
     }
 
     private static Presentacion mapRow(ResultSet rs, int i) throws SQLException {

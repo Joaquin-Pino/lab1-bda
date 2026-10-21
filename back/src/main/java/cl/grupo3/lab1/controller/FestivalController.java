@@ -2,6 +2,12 @@ package cl.grupo3.lab1.controller;
 
 import java.util.List;
 
+import java.time.LocalDate;
+import cl.grupo3.lab1.dto.GrillaResponse;
+import cl.grupo3.lab1.service.GrillaService;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import cl.grupo3.lab1.dto.FestivalRequest;
 import cl.grupo3.lab1.dto.FestivalResponse;
 import cl.grupo3.lab1.security.AuthUser;
@@ -31,9 +37,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class FestivalController {
 
     private final FestivalService festivalService;
+    private final GrillaService grillaService;
 
-    public FestivalController(FestivalService festivalService) {
+    public FestivalController(FestivalService festivalService, GrillaService grillaService) {
         this.festivalService = festivalService;
+        this.grillaService = grillaService;
     }
 
     @Autenticado
@@ -68,5 +76,14 @@ public class FestivalController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Long id, @AuthenticationPrincipal AuthUser usuarioAutenticado) {
         festivalService.eliminar(id, usuarioAutenticado);
+    }
+
+    /** Grilla del día. */
+    @Autenticado
+    @GetMapping("/{id}/grilla")
+    public GrillaResponse grilla(@PathVariable Long id,
+                                 @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+                                 @AuthenticationPrincipal AuthUser usuarioAutenticado) {
+        return grillaService.obtener(id, fecha, usuarioAutenticado);
     }
 }
