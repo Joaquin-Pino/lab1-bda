@@ -1,9 +1,22 @@
 services:
   postgres:
-    image: 'postgres:latest'
+    image: postgres:17
+    container_name: festivales-db
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      POSTGRES_DB: ${POSTGRES_DB:-festivales}
+      POSTGRES_USER: ${POSTGRES_USER:-festivales_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-festivales_pass}
+      TZ: America/Santiago
     ports:
-      - '5432'
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - festivales_pgdata:/var/lib/postgresql/data
+      - ../db:/db:ro,z
+      - ../db/init_all.sql:/docker-entrypoint-initdb.d/00_init_all.sql:ro,z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+volumes:
+  festivales_pgdata:
