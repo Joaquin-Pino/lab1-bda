@@ -13,6 +13,8 @@ DECLARE
     v_art_3      BIGINT;
     v_p1         BIGINT;
     v_p2         BIGINT;
+    v_recinto_2  BIGINT;
+    v_esc_otro   BIGINT;
     v_ok         INT := 0;
     v_falla      INT := 0;
 BEGIN
@@ -161,6 +163,83 @@ BEGIN
         RAISE NOTICE 'FALLA caso 10 -> %', SQLERRM;
         v_falla := v_falla + 1;
     END;
+
+    INSERT INTO recinto (nombre, direccion, aforo_maximo)
+    VALUES ('TEST Recinto 2', 'Otra Calle 456', 5000)
+        RETURNING id_recinto INTO v_recinto_2;
+    INSERT INTO escenario (id_recinto, nombre, capacidad_maxima)
+    VALUES (v_recinto_2, 'TEST Escenario Otro Recinto', 2000) RETURNING id_escenario INTO v_esc_otro;
+
+    -- Caso 11: Rechazo
+    BEGIN
+    INSERT INTO presentacion (id_festival, id_escenario, id_artista, fecha_hora_inicio, fecha_hora_fin)
+    VALUES (v_festival, v_esc_otro, v_art_2, '2026-12-05 12:00-03', '2026-12-05 13:00-03');
+    RAISE NOTICE 'FALLA caso 11: se permitió un escenario de otro recinto';
+            v_falla := v_falla + 1;
+    EXCEPTION WHEN raise_exception THEN
+            RAISE NOTICE 'OK    caso 11 (escenario de otro recinto) -> %', SQLERRM;
+            v_ok := v_ok + 1;
+    END;
+
+        -- Caso 12: Rechazo
+    BEGIN
+    INSERT INTO presentacion (id_festival, id_escenario, id_artista, fecha_hora_inicio, fecha_hora_fin)
+    VALUES (v_festival, v_esc_a, v_art_2, '2026-12-07 18:00-03', '2026-12-07 19:00-03');
+    RAISE NOTICE 'FALLA caso 12: se permitió una presentación fuera de las fechas';
+            v_falla := v_falla + 1;
+    EXCEPTION WHEN raise_exception THEN
+            RAISE NOTICE 'OK    caso 12 (fuera de las fechas del festival) -> %', SQLERRM;
+            v_ok := v_ok + 1;
+    END;
+
+        -- Caso 13: Rechazo 
+    BEGIN
+    INSERT INTO presentacion (id_festival, id_escenario, id_artista, fecha_hora_inicio, fecha_hora_fin)
+    VALUES (v_festival, v_esc_a, v_art_2, '2026-12-07 01:00-03', '2026-12-07 02:00-03');
+    RAISE NOTICE 'FALLA caso 13: la 1:00 AM del día siguiente se contó dentro del festival';
+            v_falla := v_falla + 1;
+    EXCEPTION WHEN raise_exception THEN
+            RAISE NOTICE 'OK    caso 13 (1:00 AM del día siguiente al último) -> %', SQLERRM;
+            v_ok := v_ok + 1;
+    END;
+
+        -- Caso 14: Pasar
+    BEGIN
+    INSERT INTO presentacion (id_festival, id_escenario, id_artista, fecha_hora_inicio, fecha_hora_fin)
+    VALUES (v_festival, v_esc_a, v_art_2, '2026-12-06 23:00-03', '2026-12-07 00:30-03');
+    RAISE NOTICE 'OK    caso 14 (23:00 del último día)';
+            v_ok := v_ok + 1;
+    EXCEPTION WHEN raise_exception THEN
+            RAISE NOTICE 'FALLA caso 14 -> %', SQLERRM;
+            v_falla := v_falla + 1;
+    END;
+
+
+    ALTER TABLE presentacion DISABLE TRIGGER trg_validar_presentacion;
+
+    -- Caso 15: Rechazo
+    BEGIN
+    INSERT INTO presentacion (id_festival, id_escenario, id_artista, fecha_hora_inicio, fecha_hora_fin)
+    VALUES (v_festival, v_esc_a, v_art_3, '2026-12-06 18:30-03', '2026-12-06 19:30-03');
+    RAISE NOTICE 'FALLA caso 15: sin trigger, se permitió un cruce de escenario';
+            v_falla := v_falla + 1;
+    EXCEPTION WHEN exclusion_violation THEN
+            RAISE NOTICE 'OK    caso 15 (sin trigger, mismo escenario) -> %', SQLERRM;
+            v_ok := v_ok + 1;
+    END;
+
+        -- Caso 16: Rechazo
+    BEGIN
+    INSERT INTO presentacion (id_festival, id_escenario, id_artista, fecha_hora_inicio, fecha_hora_fin)
+    VALUES (v_festival, v_esc_b, v_art_1, '2026-12-06 18:30-03', '2026-12-06 19:30-03');
+    RAISE NOTICE 'FALLA caso 16: sin trigger, se permitió un artista en dos escenarios';
+            v_falla := v_falla + 1;
+    EXCEPTION WHEN exclusion_violation THEN
+            RAISE NOTICE 'OK    caso 16 (sin trigger, mismo artista) -> %', SQLERRM;
+            v_ok := v_ok + 1;
+    END;
+
+    ALTER TABLE presentacion ENABLE TRIGGER trg_validar_presentacion;
     RAISE NOTICE 'RESUMEN: % OK, % FALLA', v_ok, v_falla;
 END;
 $$;
