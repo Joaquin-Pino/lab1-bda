@@ -2,11 +2,14 @@ package cl.grupo3.lab1.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import cl.grupo3.lab1.model.Orden;
 import cl.grupo3.lab1.model.Ticket;
+import cl.grupo3.lab1.model.TicketDetalle;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -61,6 +64,40 @@ public class OrdenRepository {
     public List<Ticket> findTicketsByOrden(Long idOrden) {
         return jdbc.query(SELECT_TICKET + "WHERE id_orden = :idOrden ORDER BY id_ticket",
                 new MapSqlParameterSource("idOrden", idOrden), OrdenRepository::mapTicket);
+    }
+
+    /** Tickets de varias órdenes en una sola consulta (evita una consulta por orden). */
+    public List<Ticket> findTicketsByOrdenes(Collection<Long> idsOrden) {
+        if (idsOrden.isEmpty()) {
+            return List.of();
+        }
+        return jdbc.query(SELECT_TICKET + "WHERE id_orden IN (:idsOrden) ORDER BY id_ticket",
+                new MapSqlParameterSource("idsOrden", idsOrden), OrdenRepository::mapTicket);
+    }
+
+    /** Tickets de un asistente con su tipo de entrada y festival, de la compra más reciente a la más antigua. */
+    public List<TicketDetalle> findTicketsByUsuario(Long idUsuario) {
+        String sql = """
+                SELECT t.id_ticket, t.codigo_unico, t.estado, t.precio, t.fecha_uso, t.id_orden,
+                       te.id_tipo_entrada, te.nombre_tipo, te.fecha AS fecha_entrada,
+                       f.id_festival, f.nombre AS nombre_festival
+                FROM ticket t
+                JOIN orden_compra o ON o.id_orden = t.id_orden
+                JOIN tipo_entrada te ON te.id_tipo_entrada = t.id_tipo_entrada
+                JOIN festival f ON f.id_festival = te.id_festival
+                WHERE o.id_usuario_asistente = :idUsuario
+                ORDER BY o.fecha_compra DESC, t.id_ticket
+                """;
+        return jdbc.query(sql, new MapSqlParameterSource("idUsuario", idUsuario),
+                OrdenRepository::mapTicketDetalle);
+    }
+
+    private static TicketDetalle mapTicketDetalle(ResultSet rs, int i) throws SQLException {
+        return new TicketDetalle(rs.getLong("id_ticket"), rs.getString("codigo_unico"), rs.getString("estado"),
+                rs.getBigDecimal("precio"), Fechas.leer(rs, "fecha_uso"), rs.getLong("id_orden"),
+                rs.getLong("id_tipo_entrada"), rs.getString("nombre_tipo"),
+                rs.getObject("fecha_entrada", LocalDate.class), rs.getLong("id_festival"),
+                rs.getString("nombre_festival"));
     }
 
     private static Orden mapOrden(ResultSet rs, int i) throws SQLException {
