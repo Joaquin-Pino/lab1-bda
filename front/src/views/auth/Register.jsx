@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../../services/auth.service.js';
+import { mensajeError } from '../../http-common.js';
 
 function Register() {
   const navigate = useNavigate(); // hook de React Router para redireccionar después del registro exitoso
@@ -13,16 +14,23 @@ function Register() {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    
+    setErrorMensaje('');
+
+    // El backend exige entre 8 y 72 caracteres
+    if (password.length < 8 || password.length > 72) {
+      setErrorMensaje('La contraseña debe tener entre 8 y 72 caracteres.');
+      return;
+    }
+
     authService.register(nombreCompleto, email, password)
-      .then(response => {
-        // El endpoint devuelve un UsuarioResumen con status 201 CREATED
-        alert("Cuenta creada con éxito. Ya puedes iniciar sesión.");
-        navigate('/'); // Redirigimos al usuario a la página de login después del registro exitoso
+      .then(() => {
+        // El endpoint devuelve un UsuarioResumen con status 201 CREATED.
+        // Volvemos al login, que muestra el aviso de cuenta creada.
+        navigate('/', { state: { registrado: true } });
       })
       .catch(error => {
         // Axios guarda la respuesta de error del servidor en error.response.data
-        setErrorMensaje(error.response?.data?.message || "Error al crear la cuenta.");
+        setErrorMensaje(mensajeError(error, "Error al crear la cuenta."));
       });
   };
 
@@ -61,8 +69,11 @@ function Register() {
               className="form-control"
               value={password} // Conectamos el input a la variable
               onChange={(e) => setPassword(e.target.value)} // Actualizamos la variable al tipear
+              minLength={8}
+              maxLength={72}
               required // Hacemos que el campo sea obligatorio
             />
+            <div className="form-text">Entre 8 y 72 caracteres.</div>
           </div>
           <button type="submit" className="btn btn-success w-100 mb-3">Registrarse</button>
           <div className="text-center">

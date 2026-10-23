@@ -15,7 +15,7 @@ function Home() {
     <div className="container mt-5">
       <div className="p-5 text-center bg-light rounded shadow-sm">
         <h1 className="display-4">¡Bienvenido al Inicio!</h1>
-        <p className="lead">Has iniciado sesión correctamente. Esta ruta es /inicio.</p>
+        <p className="lead">Has iniciado sesión correctamente. Esta ruta es /home.</p>
         <hr className="my-4" />
         <p>Toda la navegación ocurrió sin recargar la pestaña del navegador.</p>
         <button onClick={handleLogout} className="btn btn-danger btn-lg mt-3">

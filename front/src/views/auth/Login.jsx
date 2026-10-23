@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import authService from '../../services/auth.service.js';
 import { mensajeError } from '../../http-common.js';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 function Login() {
   const navigate = useNavigate(); // hook de React Router para redirigir a otra ruta
   const { iniciarSesion } = useAuth();
+  const registrado = useLocation().state?.registrado; // viene desde Register
 
   // Declaración de estados para los campos del formulario
   const [email, setEmail] = useState('');
@@ -34,6 +35,9 @@ function Login() {
         <h2 className="text-center mb-4">Iniciar Sesión</h2>
         
         {/* Mostrar alerta si hay error */}
+        {registrado && !errorMensaje && (
+          <div className="alert alert-success">Cuenta creada con éxito. Ya puedes iniciar sesión.</div>
+        )}
         {errorMensaje && <div className="alert alert-danger">{errorMensaje}</div>}
 
         <form onSubmit={handleLogin}>
