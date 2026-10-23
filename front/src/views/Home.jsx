@@ -1,10 +1,13 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 
 function Home() {
   const navigate = useNavigate();
+  const { cerrarSesion } = useAuth();
 
   const handleLogout = () => {
-    // Al cerrar sesión, devolvemos al usuario a la ruta raíz (Login)
+    // Limpiamos la sesión y devolvemos al usuario a la ruta raíz (Login)
+    cerrarSesion();
     navigate('/');
   };
 

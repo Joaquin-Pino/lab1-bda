@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../../services/auth.service.js';
+import { mensajeError } from '../../http-common.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 function Login() {
   const navigate = useNavigate(); // hook de React Router para redirigir a otra ruta
+  const { iniciarSesion } = useAuth();
 
   // Declaración de estados para los campos del formulario
   const [email, setEmail] = useState('');
@@ -17,13 +20,11 @@ function Login() {
     // Llamada a Spring Boot
     authService.login(email, password)
       .then(response => {
-        // El backend retorna un LoginResponse. Aquí puedes guardar el token si lo hay.
-        console.log("Respuesta exitosa:", response.data);
+        iniciarSesion(response.data); // guarda token y usuario en el AuthContext
         navigate('/home'); // Redirigimos al usuario a la ruta /home
       })
-      .catch(error => { // si hay un error, lo mostramos en consola y en la UI
-        console.error("Error en login:", error);
-        setErrorMensaje("Credenciales inválidas o error de conexión.");
+      .catch(error => {
+        setErrorMensaje(mensajeError(error, "Credenciales inválidas."));
       });
   };
 
