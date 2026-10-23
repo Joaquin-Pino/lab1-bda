@@ -3,6 +3,8 @@ import Login from './views/auth/Login';
 import Register from './views/auth/Register';
 import Home from './views/Home';
 import RutaProtegida from './components/RutaProtegida';
+import LayoutAsistente from './components/LayoutAsistente';
+import Festivales from './views/asistente/Festivales';
 
 function App() {
   return (
@@ -15,6 +17,13 @@ function App() {
         {/* Rutas que requieren sesión iniciada */}
         <Route element={<RutaProtegida />}>
           <Route path="/home" element={<Home />} />
+        </Route>
+
+        {/* Vista del asistente: todas comparten la barra de navegación */}
+        <Route element={<RutaProtegida roles={['ASISTENTE']} />}>
+          <Route element={<LayoutAsistente />}>
+            <Route path="/festivales" element={<Festivales />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

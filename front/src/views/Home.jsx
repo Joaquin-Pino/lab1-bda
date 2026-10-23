@@ -1,9 +1,12 @@
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 function Home() {
   const navigate = useNavigate();
-  const { cerrarSesion } = useAuth();
+  const { rol, cerrarSesion } = useAuth();
+
+  // El asistente tiene su propia vista
+  if (rol === 'ASISTENTE') return <Navigate to="/festivales" replace />;
 
   const handleLogout = () => {
     // Limpiamos la sesión y devolvemos al usuario a la ruta raíz (Login)
