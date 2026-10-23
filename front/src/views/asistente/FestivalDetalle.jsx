@@ -4,6 +4,7 @@ import festivalService from '../../services/festival.service.js';
 import compraService from '../../services/compra.service.js';
 import { mensajeError } from '../../http-common.js';
 import { formatearFecha, formatearPrecio } from '../../utils/formato.js';
+import LineupDia from './LineupDia.jsx';
 
 const MAX_POR_COMPRA = 10; // límite del backend (CompraRequest)
 
@@ -169,6 +170,8 @@ function FestivalDetalle() {
           </table>
         </>
       )}
+
+      <LineupDia festival={festival} />
     </>
   );
 }

@@ -8,4 +8,7 @@ const obtener = (id) => http.get(`/festivales/${id}`);
 // Ojo: este endpoint recibe el parámetro en camelCase (idFestival)
 const listarTiposEntrada = (idFestival) => http.get("/tipos-entrada", { params: { idFestival } });
 
-export default { listar, obtener, listarTiposEntrada };
+// fecha en formato "YYYY-MM-DD"; debe estar dentro de las fechas del festival
+const obtenerGrilla = (idFestival, fecha) => http.get(`/festivales/${idFestival}/grilla`, { params: { fecha } });
+
+export default { listar, obtener, listarTiposEntrada, obtenerGrilla };
