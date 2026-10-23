@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS log_entrada, notificacion, auditoria_precio_entrada, ticket, orden_compra, presentacion, tipo_entrada, festival, artista, escenario, recinto, usuario, rol CASCADE;
+DROP TABLE IF EXISTS compensacion, log_entrada, notificacion, auditoria_precio_entrada, ticket, orden_compra, presentacion, tipo_entrada, festival, artista, escenario, recinto, usuario, rol CASCADE;
 
 CREATE TABLE rol (
     id SERIAL PRIMARY KEY,
@@ -106,6 +106,18 @@ CREATE TABLE log_entrada (
     id_usuario BIGINT REFERENCES usuario(id_usuario) ON DELETE SET NULL,
     fecha TIMESTAMPTZ NOT NULL DEFAULT now(),
     resultado VARCHAR(30) NOT NULL
+);
+
+-- Crédito otorgado al cancelar una presentación: a lo más una compensación por ticket y día
+CREATE TABLE compensacion (
+    id BIGSERIAL PRIMARY KEY,
+    id_ticket BIGINT NOT NULL REFERENCES ticket(id_ticket) ON DELETE CASCADE,
+    dia DATE NOT NULL,
+    id_presentacion BIGINT REFERENCES presentacion(id_presentacion) ON DELETE SET NULL,
+    id_usuario BIGINT NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    monto NUMERIC(12,2) NOT NULL CHECK (monto >= 0),
+    fecha TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT uq_compensacion_ticket_dia UNIQUE (id_ticket, dia)
 );
 
 CREATE TABLE auditoria_precio_entrada (
