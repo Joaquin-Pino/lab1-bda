@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import festivalService from '../../services/festival.service.js';
 import { mensajeError } from '../../http-common.js';
-
-// "2026-11-14" -> "14-11-2026" (sin pasar por Date para no correr el día por la zona horaria)
-const formatearFecha = (fecha) => fecha.split('-').reverse().join('-');
+import { formatearFecha } from '../../utils/formato.js';
 
 function Festivales() {
   const [festivales, setFestivales] = useState([]);

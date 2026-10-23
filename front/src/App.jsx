@@ -5,6 +5,7 @@ import Home from './views/Home';
 import RutaProtegida from './components/RutaProtegida';
 import LayoutAsistente from './components/LayoutAsistente';
 import Festivales from './views/asistente/Festivales';
+import FestivalDetalle from './views/asistente/FestivalDetalle';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route element={<RutaProtegida roles={['ASISTENTE']} />}>
           <Route element={<LayoutAsistente />}>
             <Route path="/festivales" element={<Festivales />} />
+            <Route path="/festivales/:id" element={<FestivalDetalle />} />
           </Route>
         </Route>
       </Routes>
