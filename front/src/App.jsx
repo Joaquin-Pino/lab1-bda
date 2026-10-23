@@ -6,6 +6,8 @@ import RutaProtegida from './components/RutaProtegida';
 import LayoutAsistente from './components/LayoutAsistente';
 import Festivales from './views/asistente/Festivales';
 import FestivalDetalle from './views/asistente/FestivalDetalle';
+import MisTickets from './views/asistente/MisTickets';
+import MisOrdenes from './views/asistente/MisOrdenes';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
           <Route element={<LayoutAsistente />}>
             <Route path="/festivales" element={<Festivales />} />
             <Route path="/festivales/:id" element={<FestivalDetalle />} />
+            <Route path="/mis-tickets" element={<MisTickets />} />
+            <Route path="/mis-ordenes" element={<MisOrdenes />} />
           </Route>
         </Route>
       </Routes>

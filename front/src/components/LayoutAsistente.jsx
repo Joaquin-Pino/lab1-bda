@@ -21,6 +21,12 @@ function LayoutAsistente() {
             <li className="nav-item">
               <NavLink to="/festivales" className="nav-link">Festivales</NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink to="/mis-tickets" className="nav-link">Mis tickets</NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/mis-ordenes" className="nav-link">Mis órdenes</NavLink>
+            </li>
           </ul>
           <span className="navbar-text text-light me-3">{usuario?.nombre_completo}</span>
           <button onClick={handleLogout} className="btn btn-outline-light btn-sm">
