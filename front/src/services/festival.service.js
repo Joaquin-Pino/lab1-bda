@@ -11,4 +11,7 @@ const listarTiposEntrada = (idFestival) => http.get("/tipos-entrada", { params: 
 // fecha en formato "YYYY-MM-DD"; debe estar dentro de las fechas del festival
 const obtenerGrilla = (idFestival, fecha) => http.get(`/festivales/${idFestival}/grilla`, { params: { fecha } });
 
-export default { listar, obtener, listarTiposEntrada, obtenerGrilla };
+// crear un festival (solo para PRODUCTOR y ADMIN)
+const crearFestival = (festivalData) => http.post("/festivales", festivalData);
+
+export default { listar, obtener, listarTiposEntrada, obtenerGrilla, crearFestival };
