@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import authService from '../../services/auth.service.js';
 import { mensajeError } from '../../http-common.js';
@@ -10,13 +10,13 @@ function CrearFestival() {
 
   // Declaración de estados para los campos del formulario
   const [nombre, setNombre] = useState('');
-  const [recinto, setRecinto] = useState('');
+  const [idRecinto, setIdRecinto] = useState(null);
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
   const [estado, setEstado] = useState('PUBLICADO'); // Estado inicial del festival
   
   // Estado para manejar errores y recintos
-  const [errorMensaje, setErrorMensaje] = useState('Sucedió un error al crear el festival.');
+  const [errorMensaje, setErrorMensaje] = useState('');
   const [recintos, setRecintos] = useState([]);
 
   // Cargar recintos al montar el componente
@@ -38,7 +38,7 @@ function CrearFestival() {
     // Datos del festival a crear
     const festivalData = {
       nombre: nombre,
-      id_recinto: recinto, 
+      id_recinto: idRecinto, 
       fecha_inicio: fechaInicio,
       fecha_fin: fechaFin,
       estado: estado
@@ -81,13 +81,13 @@ function CrearFestival() {
             <label className="form-label">Recinto</label>
             <select 
               className="form-control" 
-              value={recinto}
-              onChange={(e) => setRecinto(e.target.value)}
+              value={idRecinto}
+              onChange={(e) => setIdRecinto(Number(e.target.value))}
               required
             >
               <option value="">Seleccionar recinto</option>
               {recintos.map((recinto) => (
-                <option key={recinto.id} value={recinto.id}>
+                <option key={recinto.id_recinto} value={recinto.id_recinto}>
                   {recinto.nombre}
                 </option>
               ))}

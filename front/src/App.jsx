@@ -41,7 +41,7 @@ function App() {
           <Route element={<LayoutProductor />}>
             <Route path="/festivales-produccion" element={<FestivalesProduccion />} />
             <Route path="/mis-festivales" element={<MisFestivales />} />
-            <Route path="/festivales-produccion/nuevos" element={<CrearFestival />} />
+            <Route path="/festivales-produccion/nuevo" element={<CrearFestival />} />
           </Route>
         </Route>
 
