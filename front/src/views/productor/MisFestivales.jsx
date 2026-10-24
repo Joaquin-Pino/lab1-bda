@@ -59,6 +59,7 @@ function FestivalesProduccion() {
               <th>Recinto</th>
               <th>Inicio</th>
               <th>Término</th>
+              <th>Estado</th>
               <th></th>
             </tr>
           </thead>
@@ -69,6 +70,7 @@ function FestivalesProduccion() {
                 <td>{festival.nombre_recinto}</td>
                 <td>{formatearFecha(festival.fecha_inicio)}</td>
                 <td>{formatearFecha(festival.fecha_fin)}</td>
+                <td>{festival.estado}</td>
                 <td className="text-end">
                   <Link to={`/festivales-produccion/${festival.id_festival}`} className="btn btn-primary btn-sm">
                     Ver
