@@ -8,6 +8,9 @@ function Home() {
   // El asistente tiene su propia vista
   if (rol === 'ASISTENTE') return <Navigate to="/festivales" replace />;
 
+  // El productor tiene su propia vista
+  if (rol === 'PRODUCTOR') return <Navigate to="/festivales-produccion" replace />;
+
   const handleLogout = () => {
     // Limpiamos la sesión y devolvemos al usuario a la ruta raíz (Login)
     cerrarSesion();
