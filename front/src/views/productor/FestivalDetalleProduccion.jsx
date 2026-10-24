@@ -49,10 +49,15 @@ function FestivalDetalle() {
         {festival.nombre_recinto} · {formatearFecha(festival.fecha_inicio)} al {formatearFecha(festival.fecha_fin)}
       </p>
 
+      {/* Un boton para editar el festival */}
+      <Link to={`/festivales-produccion/${festival.id_festival}`} className="btn btn-outline-primary btn-sm">
+        Editar Festival
+      </Link>
+
       <h4 className="mt-4 mb-3">Entradas</h4>
     
       {/* Un boton para crear un tipo de entrada */}
-      <Link to={`/festivales-produccion/${festival.id_festival}/crear-entrada`} className="btn btn-primary btn-sm">
+      <Link to={`/festivales-produccion/${festival.id_festival}/crear-entrada`} className="btn btn-secondary btn-sm">
         Crear un Tipo de Entrada
       </Link>
 
@@ -67,7 +72,7 @@ function FestivalDetalle() {
                 <th>Válida para</th>
                 <th>Precio</th>
                 <th>Disponibles</th>
-                <th>Cantidad</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -83,17 +88,18 @@ function FestivalDetalle() {
                     <td>
                       {agotado ? <span className="badge bg-secondary">Agotado</span> : tipo.aforo_disponible}
                     </td>
-                    {/* Boton para editar este tipo de entrada*/}
+                    
                     <td>
-                      <Link to={`/festivales-produccion/${festival.id_festival}/editar-entrada/${tipo.id_tipo_entrada}`} className="btn btn-outline-primary btn-sm">
-                        Editar
-                      </Link>
-                    </td>
-                    {/* Boton para eliminar*/}
-                    <td>
-                      <Link to={`/festivales-produccion/${festival.id_festival}/eliminar-entrada/${tipo.id_tipo_entrada}`} className="btn btn-outline-danger btn-sm">
-                        Eliminar
-                      </Link>
+                      <div className="d-flex justify-content-end gap-2">
+                        {/* Boton para editar este tipo de entrada*/}
+                        <Link to={`/festivales-produccion/${festival.id_festival}/editar-entrada/${tipo.id_tipo_entrada}`} className="btn btn-outline-primary btn-sm">
+                          Editar
+                        </Link>
+                        {/* Boton para eliminar*/}
+                        <Link to={`/festivales-produccion/${festival.id_festival}/eliminar-entrada/${tipo.id_tipo_entrada}`} className="btn btn-outline-danger btn-sm">
+                          Eliminar
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );

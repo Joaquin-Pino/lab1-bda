@@ -35,7 +35,7 @@ function LineupDiaProductor({ festival }) {
 
       {/* Un boton para crear una presentacion */}
       <div className="text-muted mb-3">
-        <Link to={`/festivales-produccion/${festival.id_festival}`} className="btn btn-primary mb-3">
+        <Link to={`/festivales-produccion/${festival.id_festival}`} className="btn btn-secondary mb-3">
           Crear Presentación
         </Link>
       </div>
