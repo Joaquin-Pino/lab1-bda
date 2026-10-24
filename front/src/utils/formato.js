@@ -12,3 +12,10 @@ export const formatearFechaHora = (fechaHora) =>
 // 35000 -> "$35.000"
 export const formatearPrecio = (monto) =>
   Number(monto).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+  
+export default {
+  formatearFecha,
+  formatearHora,
+  formatearFechaHora,
+  formatearPrecio
+};  

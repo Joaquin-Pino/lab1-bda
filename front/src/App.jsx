@@ -8,6 +8,13 @@ import Festivales from './views/asistente/Festivales';
 import FestivalDetalle from './views/asistente/FestivalDetalle';
 import MisTickets from './views/asistente/MisTickets';
 import MisOrdenes from './views/asistente/MisOrdenes';
+import LayoutProductor from './components/LayoutProductor';
+import FestivalesProduccion from './views/productor/FestivalesProduccion';
+import MisFestivales from './views/productor/MisFestivales';
+import CrearFestival from './views/productor/CrearFestival';
+import FestivalDetalleProduccion from './views/productor/FestivalDetalleProduccion';
+import CrearEntrada from './views/productor/CrearEntrada';
+import EditarEntrada from './views/productor/EditarEntrada';
 
 function App() {
   return (
@@ -31,6 +38,19 @@ function App() {
             <Route path="/mis-ordenes" element={<MisOrdenes />} />
           </Route>
         </Route>
+
+        {/* Vista del productor: todas comparten la barra de navegación */}
+        <Route element={<RutaProtegida roles={['PRODUCTOR']} />}>
+          <Route element={<LayoutProductor />}>
+            <Route path="/festivales-produccion" element={<FestivalesProduccion />} />
+            <Route path="/mis-festivales" element={<MisFestivales />} />
+            <Route path="/festivales-produccion/nuevo" element={<CrearFestival />} />
+            <Route path="/festivales-produccion/:idFestival" element={<FestivalDetalleProduccion />} />
+            <Route path="/festivales-produccion/:idFestival/crear-entrada" element={<CrearEntrada />} />
+            <Route path="/festivales-produccion/:idFestival/editar-entrada/:idTipoEntrada" element={<EditarEntrada />} />
+          </Route>
+        </Route>
+
       </Routes>
     </Router>
   );
