@@ -17,7 +17,7 @@ function LayoutProductor() {
     <>
       <nav className="navbar navbar-expand navbar-dark bg-dark mb-4">
         <div className="container">
-          // Nombre de la aplicación y enlaces a las distintas pantallas del productor. Se usa NavLink para que se aplique la clase "active" al enlace correspondiente a la pantalla actual.
+          {/* Nombre de la aplicación y enlaces a las distintas pantallas del productor. Se usa NavLink para que se aplique la clase "active" al enlace correspondiente a la pantalla actual. */}
           <span className="navbar-brand">Festivales</span>
           <ul className="navbar-nav me-auto">
             <li className="nav-item">

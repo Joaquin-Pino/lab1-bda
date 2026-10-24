@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import authService from '../../services/auth.service.js';
 import { mensajeError } from '../../http-common.js';
-import { crearFestival } from '../../services/festival.service.js';
-import { listarRecintos } from '../../services/recinto.service.js';
+import festivalService from '../../services/festival.service.js';
+import recintoService from '../../services/recinto.service.js';
 
 function CrearFestival() {
   const navigate = useNavigate(); // hook de React Router para redirigir a otra ruta
@@ -22,7 +22,7 @@ function CrearFestival() {
   // Cargar recintos al montar el componente
   useEffect(() => {
     // Cargar recintos al montar el componente
-    listarRecintos()
+    recintoService.listarRecintos()
       .then(response => {
         setRecintos(response.data);
       })
@@ -45,7 +45,7 @@ function CrearFestival() {
     };
 
     // Llamada al servicio para crear el festival
-    crearFestival(festivalData)
+    festivalService.crearFestival(festivalData)
       .then(response => {
         alert("Festival creado exitosamente.");
         navigate('/festivales'); // Redirigimos al usuario a la lista de festivales
