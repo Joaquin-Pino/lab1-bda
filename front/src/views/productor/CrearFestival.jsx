@@ -19,23 +19,35 @@ function CrearFestival() {
   const [errorMensaje, setErrorMensaje] = useState('Sucedió un error al crear el festival.');
   const [recintos, setRecintos] = useState([]);
 
+  // Cargar recintos al montar el componente
+  useEffect(() => {
+    // Cargar recintos al montar el componente
+    listarRecintos()
+      .then(response => {
+        setRecintos(response.data);
+      })
+      .catch(error => {
+        setErrorMensaje(mensajeError(error, "No se pudieron cargar los recintos."));
+      });
+  }, []);
+
   const handleCrearFestival = (e) => {
     e.preventDefault();
     setErrorMensaje(''); // Limpiamos errores previos
 
     // Datos del festival a crear
     const festivalData = {
-      nombre,
-      recinto,
-      fechaInicio,
-      fechaFin,
-      estado
+      nombre: nombre,
+      id_recinto: recinto, 
+      fecha_inicio: fechaInicio,
+      fecha_fin: fechaFin,
+      estado: estado
     };
 
     // Llamada al servicio para crear el festival
     crearFestival(festivalData)
       .then(response => {
-        successMessage("Festival creado exitosamente.");
+        alert("Festival creado exitosamente.");
         navigate('/festivales'); // Redirigimos al usuario a la lista de festivales
       })
       .catch(error => {
@@ -51,9 +63,9 @@ function CrearFestival() {
         {/* Mostrar alerta si hay error */}
         {errorMensaje && <div className="alert alert-danger">{errorMensaje}</div>}
 
-        // crear formulario para crear festival
+        {/* crear formulario para crear festival */}
         <form onSubmit={handleCrearFestival}>
-          // nombre del festival
+          {/* nombre del festival */}
           <div className="mb-3">
             <label className="form-label">Nombre</label>
             <input 
@@ -64,7 +76,7 @@ function CrearFestival() {
               required
             />
           </div>
-          // recinto del festival
+          {/* recinto del festival */}
           <div className="mb-3">
             <label className="form-label">Recinto</label>
             <select 
@@ -81,7 +93,7 @@ function CrearFestival() {
               ))}
             </select>
           </div>
-          // fecha de inicio del festival
+          {/* fecha de inicio del festival */}
           <div className="mb-3">
             <label className="form-label">Fecha de Inicio</label>
             <input 
@@ -92,7 +104,7 @@ function CrearFestival() {
               required
             />
           </div>
-          // fecha de fin del festival
+          {/* fecha de fin del festival */}
           <div className="mb-3">
             <label className="form-label">Fecha de Fin</label>
             <input 
@@ -103,7 +115,7 @@ function CrearFestival() {
               required
             />
           </div>
-          // estado del festival
+          {/* estado del festival */}
           <div className="mb-3">
             <label className="form-label">Estado</label>
             <select 
