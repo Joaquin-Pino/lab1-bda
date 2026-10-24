@@ -7,7 +7,7 @@ import { formatearFecha, formatearPrecio } from '../../utils/formato.js';
 import LineupDiaProductor from './LineupDiaProductor.jsx';
 
 function FestivalDetalle() {
-  const { id } = useParams(); // id del festival que viene en la URL
+  const { idFestival } = useParams(); // id del festival que viene en la URL
 
   const [festival, setFestival] = useState(null);
   const [tiposEntrada, setTiposEntrada] = useState([]);
@@ -18,8 +18,8 @@ function FestivalDetalle() {
   useEffect(() => {
     // Se piden el festival, sus tipos de entrada y el saldo al mismo tiempo
     Promise.all([
-      festivalService.obtener(id),
-      festivalService.listarTiposEntrada(id)
+      festivalService.obtener(idFestival),
+      festivalService.listarTiposEntrada(idFestival)
     ])
       .then(([respFestival, respTipos]) => {
         setFestival(respFestival.data);
@@ -27,28 +27,7 @@ function FestivalDetalle() {
       })
       .catch(error => setErrorMensaje(mensajeError(error, "No se pudo cargar el festival.")))
       .finally(() => setCargando(false));
-  }, [id]);
-
-  const handleComprar = (tipo) => {
-    setErrorCompra('');
-    setOrden(null);
-    setComprandoId(tipo.id_tipo_entrada);
-
-    const cantidad = cantidades[tipo.id_tipo_entrada] ?? 1;
-    compraService.comprar(tipo.id_tipo_entrada, cantidad, usarCredito)
-      .then(response => {
-        setOrden(response.data);
-        setUsarCredito(false);
-        // Se recargan los cupos y el saldo, que cambiaron con la compra
-        return Promise.all([festivalService.listarTiposEntrada(id), compraService.perfil()]);
-      })
-      .then(([respTipos, respPerfil]) => {
-        setTiposEntrada(respTipos.data);
-        setSaldo(Number(respPerfil.data.creditos_compensacion));
-      })
-      .catch(error => setErrorCompra(mensajeError(error, "No se pudo realizar la compra.")))
-      .finally(() => setComprandoId(null));
-  };
+  }, [idFestival]);
 
   // Si el festival no se pudo cargar, se muestra un mensaje de error y un link para volver a la lista de festivales
   if (cargando) return <p>Cargando festival...</p>;
@@ -71,33 +50,16 @@ function FestivalDetalle() {
       </p>
 
       <h4 className="mt-4 mb-3">Entradas</h4>
-
-      {orden && (
-        <div className="alert alert-success">
-          <strong>Compra realizada (orden #{orden.id_orden}).</strong>{' '}
-          Total: {formatearPrecio(orden.monto_total)}
-          {Number(orden.monto_credito_aplicado) > 0 &&
-            ` · Crédito aplicado: ${formatearPrecio(orden.monto_credito_aplicado)}`}
-          <div className="mt-2">Códigos de tus tickets:</div>
-          <ul className="mb-0">
-            {orden.tickets.map(ticket => (
-              <li key={ticket.id_ticket}><code>{ticket.codigo_unico}</code></li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {errorCompra && <div className="alert alert-danger">{errorCompra}</div>}
+    
+      {/* Un boton para crear un tipo de entrada */}
+      <Link to={`/festivales-produccion/${festival.id_festival}/crear-entrada`} className="btn btn-primary btn-sm">
+        Crear un Tipo de Entrada
+      </Link>
 
       {tiposEntrada.length === 0 ? (
         <p className="text-muted">Este festival todavía no tiene entradas a la venta.</p>
       ) : (
         <>
-          <div className="form-check mb-3">
-            <Link to={`/festivales-produccion/${festival.id_festival}/crear-entrada`} className="btn btn-primary btn-sm">
-                    Crear un Tipo de Entrada
-                  </Link>
-          </div>
-
           <table className="table align-middle">
             <thead>
               <tr>
