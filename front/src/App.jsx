@@ -12,6 +12,8 @@ import LayoutProductor from './components/LayoutProductor';
 import FestivalesProduccion from './views/productor/FestivalesProduccion';
 import MisFestivales from './views/productor/MisFestivales';
 import CrearFestival from './views/productor/CrearFestival';
+import FestivalDetalleProduccion from './views/productor/FestivalDetalleProduccion';
+import CrearEntrada from './views/productor/CrearEntrada';
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
             <Route path="/festivales-produccion" element={<FestivalesProduccion />} />
             <Route path="/mis-festivales" element={<MisFestivales />} />
             <Route path="/festivales-produccion/nuevo" element={<CrearFestival />} />
+            <Route path="/festivales-produccion/:idFestival" element={<FestivalDetalleProduccion />} />
+            <Route path="/festivales-produccion/:idFestival/crear-entrada" element={<CrearEntrada />} />
           </Route>
         </Route>
 
