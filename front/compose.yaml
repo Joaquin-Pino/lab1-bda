@@ -1,0 +1,15 @@
+services:
+  frontend:
+    container_name: festivales-frontend
+    # Use Node >=20 (required by Vite 8+ and plugins)
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app:z
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    command: >
+      sh -c "npm install && npm run dev -- --host 0.0.0.0"

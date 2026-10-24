@@ -1,5 +1,7 @@
 package cl.grupo3.lab1.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import cl.grupo3.lab1.dto.LoginRequest;
 import cl.grupo3.lab1.dto.LoginResponse;
 import cl.grupo3.lab1.dto.PerfilResponse;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Controlador de registro, login y perfil (/api/auth). Llama a AuthService; no contiene SQL ni lógica. */
+@Tag(name = "Autenticación")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -30,6 +33,7 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(summary = "Registra un usuario asistente")
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirements
@@ -37,12 +41,14 @@ public class AuthController {
         return authService.register(registerRequest);
     }
 
+    @Operation(summary = "Inicia sesión y devuelve el JWT")
     @PostMapping("/login")
     @SecurityRequirements
     public LoginResponse login(@Valid @RequestBody LoginRequest loginRequest) {
         return authService.login(loginRequest);
     }
 
+    @Operation(summary = "Perfil del usuario autenticado")
     @GetMapping("/me")
     @Autenticado
     public PerfilResponse me(@AuthenticationPrincipal AuthUser usuarioAutenticado) {

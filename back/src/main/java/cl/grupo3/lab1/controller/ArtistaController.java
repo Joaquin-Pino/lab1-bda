@@ -1,5 +1,7 @@
 package cl.grupo3.lab1.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 import cl.grupo3.lab1.dto.ArtistaRequest;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /** CRUD de artistas (/api/artistas). Lectura: cualquier usuario autenticado. Escritura: productor o administrador. */
+@Tag(name = "Artistas")
 @RestController
 @RequestMapping("/api/artistas")
 public class ArtistaController {
@@ -30,18 +33,21 @@ public class ArtistaController {
         this.artistaService = artistaService;
     }
 
+    @Operation(summary = "Lista los artistas")
     @Autenticado
     @GetMapping
     public List<ArtistaResponse> listar() {
         return artistaService.listar();
     }
 
+    @Operation(summary = "Obtiene un artista por id")
     @Autenticado
     @GetMapping("/{id}")
     public ArtistaResponse obtener(@PathVariable Long id) {
         return artistaService.obtener(id);
     }
 
+    @Operation(summary = "Crea un artista")
     @SoloProductorOAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -49,12 +55,14 @@ public class ArtistaController {
         return artistaService.crear(artistaRequest);
     }
 
+    @Operation(summary = "Actualiza un artista")
     @SoloProductorOAdmin
     @PutMapping("/{id}")
     public ArtistaResponse actualizar(@PathVariable Long id, @Valid @RequestBody ArtistaRequest artistaRequest) {
         return artistaService.actualizar(id, artistaRequest);
     }
 
+    @Operation(summary = "Elimina un artista")
     @SoloProductorOAdmin
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
