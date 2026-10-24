@@ -23,7 +23,7 @@ function FestivalesProduccion() {
           setFestivales([]); // Limpiar la lista de festivales
           return;
         }
-        
+
         // Aplicar el filtro comparando la llave de tu DTO con el ID local
         const festivalesFiltrados = response.data.filter(
           festival => festival.id_usuario_productor === idProductorActual
@@ -42,7 +42,13 @@ function FestivalesProduccion() {
   return (
     <>
       <h2 className="mb-4">Festivales</h2>
-
+      
+      <td className="text-end">
+        <Link to="/festivales-produccion/nuevo" className="btn btn-primary btn-sm">
+           Crear nuevo festival
+        </Link>
+      </td>
+      
       {festivales.length === 0 ? (
         <p className="text-muted">No hay festivales publicados por ahora.</p>
       ) : (
