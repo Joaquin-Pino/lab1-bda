@@ -1,5 +1,7 @@
 package cl.grupo3.lab1.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import cl.grupo3.lab1.dto.CompraRequest;
 import cl.grupo3.lab1.dto.OrdenResponse;
 import cl.grupo3.lab1.security.AuthUser;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Compra de entradas (/api/compras). Solo el asistente compra, siempre a su nombre.
  */
+@Tag(name = "Compras")
 @RestController
 @RequestMapping("/api/compras")
 public class CompraController {
@@ -27,6 +30,7 @@ public class CompraController {
         this.ordenService = ordenService;
     }
 
+    @Operation(summary = "Compra entradas (llama a sp_comprar_entradas)")
     @SoloAsistente
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

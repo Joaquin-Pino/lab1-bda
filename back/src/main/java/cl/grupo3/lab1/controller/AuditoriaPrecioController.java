@@ -1,5 +1,7 @@
 package cl.grupo3.lab1.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 import cl.grupo3.lab1.dto.AuditoriaPrecioResponse;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Auditoría de precios de un tipo de entrada (/api/tipos-entrada/{id}/auditoria-precios).
  * Solo el productor dueño del festival o el administrador (el servicio comprueba el dueño).
  */
+@Tag(name = "Auditoría de precios")
 @RestController
 @RequestMapping("/api/tipos-entrada")
 public class AuditoriaPrecioController {
@@ -26,6 +29,7 @@ public class AuditoriaPrecioController {
         this.auditoriaPrecioService = auditoriaPrecioService;
     }
 
+    @Operation(summary = "Historial de cambios de precio de un tipo de entrada")
     @SoloProductorOAdmin
     @GetMapping("/{id}/auditoria-precios")
     public List<AuditoriaPrecioResponse> listar(@PathVariable Long id,

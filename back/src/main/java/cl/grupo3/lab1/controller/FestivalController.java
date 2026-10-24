@@ -1,5 +1,7 @@
 package cl.grupo3.lab1.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 import java.time.LocalDate;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Ver: cualquier usuario autenticado (el servicio filtra qué festivales ve cada uno).
  * Crear, editar y borrar: productor o administrador (el servicio comprueba que sea el dueño).
  */
+@Tag(name = "Festivales")
 @RestController
 @RequestMapping("/api/festivales")
 public class FestivalController {
@@ -44,18 +47,21 @@ public class FestivalController {
         this.grillaService = grillaService;
     }
 
+    @Operation(summary = "Lista los festivales visibles para el usuario")
     @Autenticado
     @GetMapping
     public List<FestivalResponse> listar(@AuthenticationPrincipal AuthUser usuarioAutenticado) {
         return festivalService.listar(usuarioAutenticado);
     }
 
+    @Operation(summary = "Obtiene un festival por id")
     @Autenticado
     @GetMapping("/{id}")
     public FestivalResponse obtener(@PathVariable Long id, @AuthenticationPrincipal AuthUser usuarioAutenticado) {
         return festivalService.obtener(id, usuarioAutenticado);
     }
 
+    @Operation(summary = "Crea un festival")
     @SoloProductorOAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -64,6 +70,7 @@ public class FestivalController {
         return festivalService.crear(festivalRequest, usuarioAutenticado);
     }
 
+    @Operation(summary = "Actualiza un festival")
     @SoloProductorOAdmin
     @PutMapping("/{id}")
     public FestivalResponse actualizar(@PathVariable Long id, @Valid @RequestBody FestivalRequest festivalRequest,
@@ -71,6 +78,7 @@ public class FestivalController {
         return festivalService.actualizar(id, festivalRequest, usuarioAutenticado);
     }
 
+    @Operation(summary = "Elimina un festival")
     @SoloProductorOAdmin
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -79,6 +87,7 @@ public class FestivalController {
     }
 
     /** Grilla del día. */
+    @Operation(summary = "Grilla de presentaciones de un día del festival")
     @Autenticado
     @GetMapping("/{id}/grilla")
     public GrillaResponse grilla(@PathVariable Long id,

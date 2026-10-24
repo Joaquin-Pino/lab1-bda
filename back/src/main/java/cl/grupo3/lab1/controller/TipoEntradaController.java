@@ -1,5 +1,7 @@
 package cl.grupo3.lab1.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import cl.grupo3.lab1.dto.ActualizarTipoEntradaRequest;
 import cl.grupo3.lab1.dto.CrearTipoEntradaRequest;
 import cl.grupo3.lab1.dto.TipoEntradaResponse;
@@ -20,6 +22,7 @@ import java.util.List;
  * Crear, editar y borrar: productor dueño del festival o administrador
  */
 
+@Tag(name = "Tipos de entrada")
 @RestController
 @RequestMapping("/api/tipos-entrada")
 public class TipoEntradaController {
@@ -30,6 +33,7 @@ public class TipoEntradaController {
         this.tipoEntradaService = tipoEntradaService;
     }
 
+    @Operation(summary = "Lista los tipos de entrada de un festival (idFestival)")
     @Autenticado
     @GetMapping
     public List<TipoEntradaResponse> listar(@RequestParam Long idFestival,
@@ -37,6 +41,7 @@ public class TipoEntradaController {
         return tipoEntradaService.listarPorFestival(idFestival, usuarioAutenticado);
     }
 
+    @Operation(summary = "Obtiene un tipo de entrada por id")
     @Autenticado
     @GetMapping("/{id}")
     public TipoEntradaResponse obtener(@PathVariable Long id,
@@ -44,6 +49,7 @@ public class TipoEntradaController {
         return tipoEntradaService.obtener(id, usuarioAutenticado);
     }
 
+    @Operation(summary = "Crea un tipo de entrada")
     @SoloProductorOAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -52,6 +58,7 @@ public class TipoEntradaController {
         return tipoEntradaService.crear(request, usuarioAutenticado);
     }
 
+    @Operation(summary = "Actualiza un tipo de entrada")
     @SoloProductorOAdmin
     @PutMapping("/{id}")
     public TipoEntradaResponse actualizar(@PathVariable Long id,
@@ -60,6 +67,7 @@ public class TipoEntradaController {
         return tipoEntradaService.actualizar(id, request, usuarioAutenticado);
     }
 
+    @Operation(summary = "Elimina un tipo de entrada")
     @SoloProductorOAdmin
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

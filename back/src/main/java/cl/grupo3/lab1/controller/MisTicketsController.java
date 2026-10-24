@@ -1,5 +1,7 @@
 package cl.grupo3.lab1.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 import cl.grupo3.lab1.dto.TicketDetalleResponse;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Tickets del asistente autenticado (/api/tickets/mios). Solo ve los suyos.
  */
+@Tag(name = "Tickets")
 @RestController
 @RequestMapping("/api/tickets")
 public class MisTicketsController {
@@ -24,6 +27,7 @@ public class MisTicketsController {
         this.ordenService = ordenService;
     }
 
+    @Operation(summary = "Lista los tickets del asistente autenticado")
     @SoloAsistente
     @GetMapping("/mios")
     public List<TicketDetalleResponse> listarMios(@AuthenticationPrincipal AuthUser usuarioAutenticado) {

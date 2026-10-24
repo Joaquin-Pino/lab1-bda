@@ -1,5 +1,7 @@
 package cl.grupo3.lab1.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 import cl.grupo3.lab1.dto.RecintoRequest;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /** CRUD de recintos (/api/recintos). Lectura: cualquier usuario autenticado. Escritura: productor o administrador. */
+@Tag(name = "Recintos")
 @RestController
 @RequestMapping("/api/recintos")
 public class RecintoController {
@@ -30,18 +33,21 @@ public class RecintoController {
         this.recintoService = recintoService;
     }
 
+    @Operation(summary = "Lista los recintos")
     @Autenticado
     @GetMapping
     public List<RecintoResponse> listar() {
         return recintoService.listar();
     }
 
+    @Operation(summary = "Obtiene un recinto por id")
     @Autenticado
     @GetMapping("/{id}")
     public RecintoResponse obtener(@PathVariable Long id) {
         return recintoService.obtener(id);
     }
 
+    @Operation(summary = "Crea un recinto")
     @SoloProductorOAdmin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -49,12 +55,14 @@ public class RecintoController {
         return recintoService.crear(recintoRequest);
     }
 
+    @Operation(summary = "Actualiza un recinto")
     @SoloProductorOAdmin
     @PutMapping("/{id}")
     public RecintoResponse actualizar(@PathVariable Long id, @Valid @RequestBody RecintoRequest recintoRequest) {
         return recintoService.actualizar(id, recintoRequest);
     }
 
+    @Operation(summary = "Elimina un recinto")
     @SoloProductorOAdmin
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
