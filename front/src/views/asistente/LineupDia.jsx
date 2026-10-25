@@ -59,7 +59,10 @@ function LineupDia({ festival }) {
                     <li className="list-group-item text-muted">Sin presentaciones este día</li>
                   )}
                   {escenario.presentaciones.map(p => (
-                    <li key={p.id_presentacion} className="list-group-item">
+                    // Si está cancelada se muestra tachada y en gris, con la etiqueta "Cancelada"
+                    <li key={p.id_presentacion}
+                        className={`list-group-item ${p.estado === 'CANCELADA' ? 'text-decoration-line-through text-muted' : ''}`}>
+                      {p.estado === 'CANCELADA' && <span className="badge bg-secondary float-end">Cancelada</span>}
                       <div className="text-muted small">
                         {formatearHora(p.fecha_hora_inicio)} – {formatearHora(p.fecha_hora_fin)}
                       </div>
