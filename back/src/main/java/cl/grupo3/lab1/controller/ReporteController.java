@@ -18,12 +18,12 @@ public class ReporteController {
     // Endpoint para que React consuma los datos del gráfico
     @GetMapping("/ventas")
     public ResponseEntity<List<Map<String, Object>>> obtenerReporte() {
-        List<Map<String, Object>> reporte = reporteService.obtenerVentasOcupacion();
+        List<Map<String, Object>> reporte = reporteService.obtenerVentas();
         return ResponseEntity.ok(reporte);
     }
 
     // Endpoint para refrescar manualmente la vista materializada
-    @PostMapping("/ventas/refrescar")
+    @PostMapping("/ventas")
     public ResponseEntity<List<Map<String, Object>>> refrescarReporteManual() {
         // Ejecuta el refresco y guarda los datos nuevos al mismo tiempo
         List<Map<String, Object>> datosFrescos = reporteService.refrescarReporteManual();

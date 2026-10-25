@@ -15,15 +15,15 @@ public class ReporteService {
     private ReporteRepository reporteRepository;
 
     // Obtiene los datos de la vista materializada para el reporte de ventas y ocupación
-    public List<Map<String, Object>> obtenerVentasOcupacion() {
-        return reporteRepository.obtenerVentasOcupacion();
+    public List<Map<String, Object>> obtenerVentas() {
+        return reporteRepository.obtenerVentas();
     }
 
     // Refresca manualmente la vista materializada de ventas y ocupación
     // y retorna los datos actualizados
     public List<Map<String, Object>> refrescarReporteManual() {
         reporteRepository.refrescarVistaMaterializada();
-        return reporteRepository.obtenerVentasOcupacion();
+        return reporteRepository.obtenerVentas();
     }
 
     // Se ejecuta automáticamente todos los días a las 23:59:59 (cierre de ventas)

@@ -15,8 +15,8 @@ public class ReporteRepository {
 
     // Lee los datos de la vista materializada.
     // Retorna una lista de mapas, diccionario donde 'nombre del festival' -> datos del festival
-    public List<Map<String, Object>> obtenerVentasOcupacion() {
-        String sql = "SELECT * FROM mv_ventas_ocupacion"; // Toma toda la tabla
+    public List<Map<String, Object>> obtenerVentas() {
+        String sql = "SELECT * FROM mv_ventas"; // Toma toda la tabla
         return jdbcTemplate.queryForList(sql); // queryForList transforma el resultado de la consulta SQL en una lista de mapas (diccionarios)
     }
 

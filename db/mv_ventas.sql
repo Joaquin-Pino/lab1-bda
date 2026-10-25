@@ -1,5 +1,5 @@
 -- 1. Crear la vista materializada
-CREATE MATERIALIZED VIEW mv_ventas_ocupacion AS
+CREATE MATERIALIZED VIEW mv_ventas AS
 SELECT 
     f.id_festival, -- ID del festival
     f.nombre AS festival_nombre, -- Nombre del festival
@@ -19,5 +19,6 @@ GROUP BY f.id_festival, f.nombre, te.nombre_tipo, te.aforo_total, te.aforo_dispo
 CREATE OR REPLACE FUNCTION fn_refrescar_reporte_ventas()
 RETURNS void AS $$
 BEGIN
-    REFRESH MATERIALIZED VIEW mv_ventas_ocupacion;
+    REFRESH MATERIALIZED VIEW mv_ventas;
 END;
+$$ LANGUAGE plpgsql;

@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 // Asegúrate de que esta ruta coincida con la ubicación real de tu servicio
 import reporteService from '../../services/reporte.service.js';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { Navigate } from 'react-router-dom';
 
 function DashboardAdmin() {
@@ -19,7 +19,7 @@ function DashboardAdmin() {
 
   // Cargar los datos del reporte al montar el componente
   useEffect(() => {
-    reporteService.obtenerVentas()
+    reporteService.obtenerReporte()
       .then(response => {
         setDatos(response.data);
       })
@@ -30,7 +30,7 @@ function DashboardAdmin() {
   // Función para refrescar los datos del reporte
   const manejarRefresco = () => {
     setCargando(true);
-    reporteService.refrescarVentas()
+    reporteService.actualizarReporte()
       .then(response => {
         // Gracias al cambio que hicimos en el backend, la petición POST 
         // ya nos devuelve la tabla fresca inmediatamente
@@ -65,7 +65,7 @@ function DashboardAdmin() {
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Dashboard de Reportes</h2>
-        {/* Botón para refrescar los datos del reporte */}
+        {/* Botón para actualizar los datos del reporte */}
         <button className="btn btn-dark" onClick={manejarRefresco} disabled={cargando}>
           Actualizar Datos
         </button>
