@@ -16,6 +16,8 @@ import CrearFestival from './views/productor/CrearFestival';
 import FestivalDetalleProduccion from './views/productor/FestivalDetalleProduccion';
 import CrearEntrada from './views/productor/CrearEntrada';
 import EditarEntrada from './views/productor/EditarEntrada';
+import LayoutAdministrador from './components/LayoutAdministrador';
+import DashboardAdministrador from './views/administrador/DashboardAdministrador';
 import CrearPresentacion from './views/productor/CrearPresentacion';
 import EditarPresentacion from './views/productor/EditarPresentacion';
 import AuditoriaPrecios from './views/productor/AuditoriaPrecios';
@@ -56,6 +58,13 @@ function App() {
             <Route path="/festivales-produccion/:idFestival/crear-presentacion" element={<CrearPresentacion />} />
             <Route path="/festivales-produccion/:idFestival/editar-presentacion/:idPresentacion" element={<EditarPresentacion />} />
             <Route path="/festivales-produccion/:idFestival/auditoria-precios/:idTipoEntrada" element={<AuditoriaPrecios />} />
+          </Route>
+        </Route>
+        
+        {/* Vista del administrador: todas comparten la barra de navegación */}
+        <Route element={<RutaProtegida roles={['ADMINISTRADOR']} />}>
+          <Route element={<LayoutAdministrador />}>
+            <Route path="/dashboard" element={<DashboardAdministrador />} />
           </Route>
         </Route>
 

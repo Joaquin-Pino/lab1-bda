@@ -11,6 +11,9 @@ function Home() {
   // El productor tiene su propia vista
   if (rol === 'PRODUCTOR') return <Navigate to="/festivales-produccion" replace />;
 
+  // El administrador tiene su propia vista
+  if (rol === 'ADMINISTRADOR') return <Navigate to="/dashboard" replace />;
+
   const handleLogout = () => {
     // Limpiamos la sesión y devolvemos al usuario a la ruta raíz (Login)
     cerrarSesion();

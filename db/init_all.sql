@@ -7,4 +7,5 @@
 \i /db/sp_cancelar_presentacion.sql
 \i /db/sp_validar_acceso.sql
 \i /db/seed_dev.sql
+\i /db/mv_ventas.sql
 -- Las demás personas agregan aquí sus \i (nuevos SP, triggers, vista, índices) ANTES de seed_dev.sql
