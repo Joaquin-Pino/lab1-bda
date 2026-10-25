@@ -17,6 +17,7 @@ import CrearEntrada from './views/productor/CrearEntrada';
 import EditarEntrada from './views/productor/EditarEntrada';
 import CrearPresentacion from './views/productor/CrearPresentacion';
 import EditarPresentacion from './views/productor/EditarPresentacion';
+import AuditoriaPrecios from './views/productor/AuditoriaPrecios';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
             <Route path="/festivales-produccion/:idFestival/editar-entrada/:idTipoEntrada" element={<EditarEntrada />} />
             <Route path="/festivales-produccion/:idFestival/crear-presentacion" element={<CrearPresentacion />} />
             <Route path="/festivales-produccion/:idFestival/editar-presentacion/:idPresentacion" element={<EditarPresentacion />} />
+            <Route path="/festivales-produccion/:idFestival/auditoria-precios/:idTipoEntrada" element={<AuditoriaPrecios />} />
           </Route>
         </Route>
 

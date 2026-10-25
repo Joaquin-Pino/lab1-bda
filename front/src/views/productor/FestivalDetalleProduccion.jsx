@@ -111,6 +111,9 @@ function FestivalDetalle() {
                     
                     <td>
                       <div className="d-flex justify-content-end gap-2">
+                        <Link to={`/festivales-produccion/${festival.id_festival}/auditoria-precios/${tipo.id_tipo_entrada}`} className="btn btn-outline-secondary btn-sm">
+                          Historial de precios
+                        </Link>
                         {/* Boton para editar este tipo de entrada*/}
                         <Link to={`/festivales-produccion/${festival.id_festival}/editar-entrada/${tipo.id_tipo_entrada}`} className="btn btn-outline-primary btn-sm">
                           Editar

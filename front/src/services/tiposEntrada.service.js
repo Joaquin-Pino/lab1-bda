@@ -12,4 +12,7 @@ const editarTipoEntrada = (idTipoEntrada, tipoEntradaData) => http.put(`/tipos-e
 // Eliminar un tipo de entrada existente de un festival
 const eliminarTipoEntrada = (idTipoEntrada) => http.delete(`/tipos-entrada/${idTipoEntrada}`);
 
-export default { obtenerTipoEntrada, crearTipoEntrada, editarTipoEntrada, eliminarTipoEntrada };
+// Historial de cambios de precio de un tipo de entrada
+const listarAuditoriaPrecios = (idTipoEntrada) => http.get(`/tipos-entrada/${idTipoEntrada}/auditoria-precios`);
+
+export default { obtenerTipoEntrada, crearTipoEntrada, editarTipoEntrada, eliminarTipoEntrada, listarAuditoriaPrecios };
