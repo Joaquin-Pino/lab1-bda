@@ -9,4 +9,7 @@ const crearTipoEntrada = (tipoEntradaData) => http.post("/tipos-entrada", tipoEn
 // Actualizar un tipo de entrada existente de un festival
 const editarTipoEntrada = (idTipoEntrada, tipoEntradaData) => http.put(`/tipos-entrada/${idTipoEntrada}`, tipoEntradaData);
 
-export default { obtenerTipoEntrada, crearTipoEntrada, editarTipoEntrada };
+// Eliminar un tipo de entrada existente de un festival
+const eliminarTipoEntrada = (idTipoEntrada) => http.delete(`/tipos-entrada/${idTipoEntrada}`);
+
+export default { obtenerTipoEntrada, crearTipoEntrada, editarTipoEntrada, eliminarTipoEntrada };
