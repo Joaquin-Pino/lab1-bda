@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import festivalService from '../../services/festival.service.js';
-import compraService from '../../services/compra.service.js';
 import { mensajeError } from '../../http-common.js';
 import { formatearFecha, formatearPrecio } from '../../utils/formato.js';
 import LineupDiaProductor from './LineupDiaProductor.jsx';
+import tiposEntradaService from '../../services/tiposEntrada.service.js';
 
 function FestivalDetalle() {
   const { idFestival } = useParams(); // id del festival que viene en la URL
 
   const [festival, setFestival] = useState(null);
   const [tiposEntrada, setTiposEntrada] = useState([]);
-  const [saldo, setSaldo] = useState(0);
   const [cargando, setCargando] = useState(true);
   const [errorMensaje, setErrorMensaje] = useState('');
+  const [errorEliminar, setErrorEliminar] = useState('');
 
   useEffect(() => {
-    // Se piden el festival, sus tipos de entrada y el saldo al mismo tiempo
+    // Se piden el festival y sus tipos de entrada al mismo tiempo
     Promise.all([
       festivalService.obtener(idFestival),
       festivalService.listarTiposEntrada(idFestival)
@@ -29,20 +29,38 @@ function FestivalDetalle() {
       .finally(() => setCargando(false));
   }, [idFestival]);
 
+  const handleEliminar = (tipo) => {
+    if (!window.confirm(`¿Está seguro de eliminar el tipo de entrada "${tipo.nombre_tipo}"?`)) return;
+    if (!window.confirm(`Esta acción no se puede deshacer. ¿Desea continuar?`)) return;
+    setErrorEliminar('');
+    tiposEntradaService.eliminarTipoEntrada(tipo.id_tipo_entrada)
+      .then(() => {
+        setTiposEntrada(lista => lista.filter(t => t.id_tipo_entrada !== tipo.id_tipo_entrada));
+      })
+      .catch(error => {
+        if (error.response?.status === 409) {
+          setErrorEliminar(`No se puede eliminar el tipo de entrada "${tipo.nombre_tipo}" porque ya tiene entradas vendidas.`);
+        } else {
+          setErrorEliminar(mensajeError(error, `No se pudo eliminar el tipo de entrada "${tipo.nombre_tipo}".`));
+        }
+      });
+    };
+
+
   // Si el festival no se pudo cargar, se muestra un mensaje de error y un link para volver a la lista de festivales
   if (cargando) return <p>Cargando festival...</p>;
   if (errorMensaje) {
     return (
       <>
         <div className="alert alert-danger">{errorMensaje}</div>
-        <Link to="/festivales">Volver a festivales</Link>
+        <Link to="/festivales-produccion">Volver a festivales</Link>
       </>
     );
   }
   
   return (
     <>
-      <Link to="/festivales" className="d-inline-block mb-3">&larr; Volver a festivales</Link>
+      <Link to="/festivales-produccion" className="d-inline-block mb-3">&larr; Volver a festivales</Link>
 
       <h2>{festival.nombre}</h2>
       <p className="text-muted">
@@ -60,6 +78,8 @@ function FestivalDetalle() {
       <Link to={`/festivales-produccion/${festival.id_festival}/crear-entrada`} className="btn btn-secondary btn-sm">
         Crear un Tipo de Entrada
       </Link>
+
+      {errorEliminar && <div className="alert alert-danger">{errorEliminar}</div>}
 
       {tiposEntrada.length === 0 ? (
         <p className="text-muted">Este festival todavía no tiene entradas a la venta.</p>
@@ -91,14 +111,17 @@ function FestivalDetalle() {
                     
                     <td>
                       <div className="d-flex justify-content-end gap-2">
+                        <Link to={`/festivales-produccion/${festival.id_festival}/auditoria-precios/${tipo.id_tipo_entrada}`} className="btn btn-outline-secondary btn-sm">
+                          Historial de precios
+                        </Link>
                         {/* Boton para editar este tipo de entrada*/}
                         <Link to={`/festivales-produccion/${festival.id_festival}/editar-entrada/${tipo.id_tipo_entrada}`} className="btn btn-outline-primary btn-sm">
                           Editar
                         </Link>
                         {/* Boton para eliminar*/}
-                        <Link to={`/festivales-produccion/${festival.id_festival}/eliminar-entrada/${tipo.id_tipo_entrada}`} className="btn btn-outline-danger btn-sm">
+                        <button className="btn btn-outline-danger btn-sm" onClick={() => handleEliminar(tipo)}>
                           Eliminar
-                        </Link>
+                        </button>
                       </div>
                     </td>
                   </tr>
