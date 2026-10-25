@@ -14,4 +14,7 @@ const obtenerGrilla = (idFestival, fecha) => http.get(`/festivales/${idFestival}
 // crear un festival (solo para PRODUCTOR y ADMIN)
 const crearFestival = (festivalData) => http.post("/festivales", festivalData);
 
-export default { listar, obtener, listarTiposEntrada, obtenerGrilla, crearFestival };
+// eliminar un festival (solo su productor o el ADMIN). Si ya tiene entradas vendidas el backend responde 409
+const eliminarFestival = (idFestival) => http.delete(`/festivales/${idFestival}`);
+
+export default { listar, obtener, listarTiposEntrada, obtenerGrilla, crearFestival, eliminarFestival };

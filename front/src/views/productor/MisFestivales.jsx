@@ -7,7 +7,9 @@ import { formatearFecha } from '../../utils/formato.js';
 function FestivalesProduccion() {
   const [festivales, setFestivales] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [errorMensaje, setErrorMensaje] = useState('');
+  const [errorMensaje, setErrorMensaje] = useState('') 
+  const [errorEliminar, setErrorEliminar] = useState('');;
+
 
   useEffect(() => {
     // Obtenemos el usuario logueado desde el localStorage
@@ -35,6 +37,25 @@ function FestivalesProduccion() {
       .catch(error => setErrorMensaje(mensajeError(error, "No se pudieron cargar los festivales.")))
       .finally(() => setCargando(false));
   }, []);
+  // Eliminar con doble confirmación. Solo funciona si el festival no tiene entradas vendidas:
+  const handleEliminar = (festival) => {
+    if (!window.confirm(`¿Eliminar el festival "${festival.nombre}"? Se borrarán también su line-up y sus tipos de entrada.`)) return;
+    if (!window.confirm(`Esta acción no se puede deshacer. ¿Confirmas que quieres eliminar "${festival.nombre}"?`)) return;
+
+    setErrorEliminar('');
+    festivalService.eliminarFestival(festival.id_festival)
+      .then(() => {
+        // Quitarlo de la tabla sin volver a pedir la lista
+        setFestivales(lista => lista.filter(f => f.id_festival !== festival.id_festival));
+      })
+      .catch(error => {
+        if (error.response?.status === 409) {
+          setErrorEliminar(`No se puede eliminar "${festival.nombre}" porque ya tiene entradas vendidas.`);
+        } else {
+          setErrorEliminar(mensajeError(error, "No se pudo eliminar el festival."));
+        }
+      });
+  };
 
   if (cargando) return <p>Cargando festivales...</p>;
   if (errorMensaje) return <div className="alert alert-danger">{errorMensaje}</div>;
@@ -48,6 +69,8 @@ function FestivalesProduccion() {
            Crear nuevo festival
         </Link>
       </td>
+
+      {errorEliminar && <div className="alert alert-danger">{errorEliminar}</div>}
       
       {festivales.length === 0 ? (
         <p className="text-muted">No hay festivales publicados por ahora.</p>
@@ -75,6 +98,9 @@ function FestivalesProduccion() {
                   <Link to={`/festivales-produccion/${festival.id_festival}`} className="btn btn-primary btn-sm">
                     Ver
                   </Link>
+                  <button className="btn btn-outline-danger btn-sm ms-2" onClick={() => handleEliminar(festival)}>
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
