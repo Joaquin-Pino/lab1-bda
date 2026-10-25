@@ -27,6 +27,9 @@ function LayoutAsistente() {
             <li className="nav-item">
               <NavLink to="/mis-ordenes" className="nav-link">Mis órdenes</NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink to="/mi-perfil" className="nav-link">Mi perfil</NavLink>
+            </li>
           </ul>
           <span className="navbar-text text-light me-3">{usuario?.nombre_completo}</span>
           <button onClick={handleLogout} className="btn btn-outline-light btn-sm">

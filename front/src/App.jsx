@@ -8,6 +8,7 @@ import Festivales from './views/asistente/Festivales';
 import FestivalDetalle from './views/asistente/FestivalDetalle';
 import MisTickets from './views/asistente/MisTickets';
 import MisOrdenes from './views/asistente/MisOrdenes';
+import MiPerfil from './views/asistente/MiPerfil';
 import LayoutProductor from './components/LayoutProductor';
 import FestivalesProduccion from './views/productor/FestivalesProduccion';
 import MisFestivales from './views/productor/MisFestivales';
@@ -17,6 +18,7 @@ import CrearEntrada from './views/productor/CrearEntrada';
 import EditarEntrada from './views/productor/EditarEntrada';
 import CrearPresentacion from './views/productor/CrearPresentacion';
 import EditarPresentacion from './views/productor/EditarPresentacion';
+import AuditoriaPrecios from './views/productor/AuditoriaPrecios';
 
 function App() {
   return (
@@ -38,6 +40,7 @@ function App() {
             <Route path="/festivales/:id" element={<FestivalDetalle />} />
             <Route path="/mis-tickets" element={<MisTickets />} />
             <Route path="/mis-ordenes" element={<MisOrdenes />} />
+            <Route path="/mi-perfil" element={<MiPerfil />} />
           </Route>
         </Route>
 
@@ -52,6 +55,7 @@ function App() {
             <Route path="/festivales-produccion/:idFestival/editar-entrada/:idTipoEntrada" element={<EditarEntrada />} />
             <Route path="/festivales-produccion/:idFestival/crear-presentacion" element={<CrearPresentacion />} />
             <Route path="/festivales-produccion/:idFestival/editar-presentacion/:idPresentacion" element={<EditarPresentacion />} />
+            <Route path="/festivales-produccion/:idFestival/auditoria-precios/:idTipoEntrada" element={<AuditoriaPrecios />} />
           </Route>
         </Route>
 
