@@ -16,6 +16,7 @@ import FestivalDetalleProduccion from './views/productor/FestivalDetalleProducci
 import CrearEntrada from './views/productor/CrearEntrada';
 import EditarEntrada from './views/productor/EditarEntrada';
 import LayoutAdministrador from './components/LayoutAdministrador';
+import DashboardAdministrador from './views/administrador/DashboardAdministrador';
 
 function App() {
   return (
@@ -55,7 +56,7 @@ function App() {
         {/* Vista del administrador: todas comparten la barra de navegación */}
         <Route element={<RutaProtegida roles={['ADMINISTRADOR']} />}>
           <Route element={<LayoutAdministrador />}>
-            <Route path="/dashboard-admin" element={<DashboardAdministrador />} />
+            <Route path="/dashboard" element={<DashboardAdministrador />} />
           </Route>
         </Route>
 
