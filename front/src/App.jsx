@@ -50,7 +50,14 @@ function App() {
             <Route path="/festivales-produccion/:idFestival/editar-entrada/:idTipoEntrada" element={<EditarEntrada />} />
           </Route>
         </Route>
-
+        
+        {/* Vista del administrador: todas comparten la barra de navegación */}
+        <Route element={<RutaProtegida roles={['ADMINISTRADOR']} />}>
+          <Route element={<LayoutAsistente />}>
+            <Route path="/dashboard-admin" element={<DashboardAdministrador />} />
+          </Route>
+        </Route>
+        
       </Routes>
     </Router>
   );
