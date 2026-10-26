@@ -9,6 +9,7 @@ import FestivalDetalle from './views/asistente/FestivalDetalle';
 import MisTickets from './views/asistente/MisTickets';
 import MisOrdenes from './views/asistente/MisOrdenes';
 import MiPerfil from './views/asistente/MiPerfil';
+import MisNotificaciones from './views/asistente/MisNotificaciones';
 import LayoutProductor from './components/LayoutProductor';
 import FestivalesProduccion from './views/productor/FestivalesProduccion';
 import MisFestivales from './views/productor/MisFestivales';
@@ -42,6 +43,7 @@ function App() {
             <Route path="/festivales/:id" element={<FestivalDetalle />} />
             <Route path="/mis-tickets" element={<MisTickets />} />
             <Route path="/mis-ordenes" element={<MisOrdenes />} />
+            <Route path="/mis-notificaciones" element={<MisNotificaciones />} />
             <Route path="/mi-perfil" element={<MiPerfil />} />
           </Route>
         </Route>
