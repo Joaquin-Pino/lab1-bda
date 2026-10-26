@@ -54,7 +54,10 @@ function CrearPresentacion() {
       id_artista: Number(idArtista),
       ...armarHorario(dia, horaInicio, horaFin)
     };
-
+    if (horaInicio === horaFin){
+      setErrorMensaje("La hora de término debe ser distinta a la hora de inicio.");
+      return;
+    }
     presentacionService.crearPresentacion(presentacionData)
       .then(() => {
         alert("Presentación creada exitosamente.");
@@ -66,6 +69,9 @@ function CrearPresentacion() {
       });
   };
 
+  // Justo antes del return del componente
+  const horasIguales = horaInicio !== '' && horaInicio === horaFin;
+  
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="card shadow p-4" style={{ maxWidth: '400px', width: '100%' }}>
@@ -119,8 +125,16 @@ function CrearPresentacion() {
             </div>
             <div className="col">
               <label className="form-label">Hora de término</label>
-              <input type="time" className="form-control" value={horaFin}
-                     onChange={(e) => setHoraFin(e.target.value)} required />
+              <input
+                  type="time"
+                  className={`form-control ${horasIguales ? 'is-invalid' : ''}`}
+                  value={horaFin}
+                  onChange={(e) => setHoraFin(e.target.value)}
+                  required
+                />
+                {horasIguales && (
+                  <div className="invalid-feedback">Debe ser distinta a la hora de inicio.</div>
+                )}
             </div>
           </div>
 
