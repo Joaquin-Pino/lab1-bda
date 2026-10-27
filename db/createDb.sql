@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS log_entrada, notificacion, auditoria_precio_entrada, ticket, orden_compra, presentacion, tipo_entrada, festival, artista, escenario, recinto, usuario, rol CASCADE;
+DROP TABLE IF EXISTS compensacion, log_entrada, notificacion, auditoria_precio_entrada, ticket, orden_compra, presentacion, tipo_entrada, festival, artista, escenario, recinto, usuario, rol CASCADE;
 
 CREATE TABLE rol (
     id SERIAL PRIMARY KEY,
-    tipo VARCHAR(20) NOT NULL UNIQUE CHECK (tipo IN ('ASISTENTE', 'PRODUCTOR'))
+    tipo VARCHAR(20) NOT NULL UNIQUE CHECK (tipo IN ('ASISTENTE', 'PRODUCTOR', 'ADMINISTRADOR'))
 );
 
 CREATE TABLE usuario (
@@ -65,6 +65,7 @@ CREATE TABLE tipo_entrada (
     precio_actual NUMERIC(12,2) NOT NULL CHECK (precio_actual >= 0),
     aforo_total INT NOT NULL CHECK (aforo_total > 0),
     aforo_disponible INT NOT NULL,
+    fecha DATE NULL, -- NULL = abono para todo el festival; con valor = entrada válida solo ese día
     CONSTRAINT uq_tipo_entrada_nombre UNIQUE (id_festival, nombre_tipo),
     CONSTRAINT ck_aforo CHECK (aforo_disponible >= 0 AND aforo_disponible <= aforo_total)
 );
@@ -107,6 +108,18 @@ CREATE TABLE log_entrada (
     resultado VARCHAR(30) NOT NULL
 );
 
+-- Crédito otorgado al cancelar una presentación: a lo más una compensación por ticket y día
+CREATE TABLE compensacion (
+    id BIGSERIAL PRIMARY KEY,
+    id_ticket BIGINT NOT NULL REFERENCES ticket(id_ticket) ON DELETE CASCADE,
+    dia DATE NOT NULL,
+    id_presentacion BIGINT REFERENCES presentacion(id_presentacion) ON DELETE SET NULL,
+    id_usuario BIGINT NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    monto NUMERIC(12,2) NOT NULL CHECK (monto >= 0),
+    fecha TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT uq_compensacion_ticket_dia UNIQUE (id_ticket, dia)
+);
+
 CREATE TABLE auditoria_precio_entrada (
     id_auditoria BIGSERIAL PRIMARY KEY,
     id_tipo_entrada BIGINT NOT NULL REFERENCES tipo_entrada(id_tipo_entrada) ON DELETE CASCADE,
@@ -115,3 +128,7 @@ CREATE TABLE auditoria_precio_entrada (
     id_usuario_modificador BIGINT REFERENCES usuario(id_usuario) ON DELETE SET NULL,
     fecha_modificacion TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Roles base del sistema (siempre necesarios, no son datos de prueba)
+INSERT INTO rol (tipo) VALUES ('ASISTENTE'), ('PRODUCTOR'), ('ADMINISTRADOR');
+
