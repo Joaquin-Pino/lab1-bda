@@ -892,5 +892,34 @@ BEGIN
     END LOOP;
 END $$;
 
+-- Cambios de precio: pasan por el trigger trg_auditoria_precio (quien modifica se toma de app.user_id,
+-- igual que hace el backend con TransactionRunner.runAs). Alimentan el historial de precios del administrador.
+DO $$
+DECLARE
+    c RECORD;
+BEGIN
+    FOR c IN
+        SELECT x.orden, te.id_tipo_entrada, u.id_usuario, x.precio, x.hace
+        FROM (VALUES
+            (1, 'Festival Cordillera', 'Pase Completo',      90000.00, 'productor1@festivales.cl', INTERVAL '6 days'),
+            (2, 'Festival Cordillera', 'General Día Actual', 40000.00, 'productor1@festivales.cl', INTERVAL '5 days'),
+            (3, 'Festival Aurora',     'Pase Completo',      65000.00, 'productor2@festivales.cl', INTERVAL '4 days'),
+            (4, 'Festival Cordillera', 'Pase Completo',      85000.00, 'admin1@festivales.cl',     INTERVAL '3 days'),
+            (5, 'Festival Primavera',  'Pase 3 Días',        95000.00, 'productor1@festivales.cl', INTERVAL '2 days'),
+            (6, 'Festival Cordillera', 'Meet & Greet',      130000.00, 'productor1@festivales.cl', INTERVAL '1 day')
+        ) AS x(orden, festival, tipo, precio, email, hace)
+        JOIN festival f ON f.nombre = x.festival
+        JOIN tipo_entrada te ON te.id_festival = f.id_festival AND te.nombre_tipo = x.tipo
+        JOIN usuario u ON u.email = x.email
+        ORDER BY x.orden
+    LOOP
+        PERFORM set_config('app.user_id', c.id_usuario::text, true);
+        UPDATE tipo_entrada SET precio_actual = c.precio WHERE id_tipo_entrada = c.id_tipo_entrada;
+        -- el trigger registra now(); se retrasa para que el historial tenga fechas distintas
+        UPDATE auditoria_precio_entrada SET fecha_modificacion = now() - c.hace
+        WHERE id_auditoria = (SELECT max(id_auditoria) FROM auditoria_precio_entrada);
+    END LOOP;
+END $$;
+
 -- Reporte de ventas actualizado con las compras de arriba
 SELECT fn_refrescar_reporte_ventas();
