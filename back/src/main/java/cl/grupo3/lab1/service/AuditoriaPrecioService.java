@@ -3,6 +3,7 @@ package cl.grupo3.lab1.service;
 import java.util.List;
 
 import cl.grupo3.lab1.dto.AuditoriaPrecioResponse;
+import cl.grupo3.lab1.dto.HistorialPrecioResponse;
 import cl.grupo3.lab1.exception.NotFoundException;
 import cl.grupo3.lab1.model.AuditoriaPrecio;
 import cl.grupo3.lab1.model.TipoEntrada;
@@ -43,6 +44,15 @@ public class AuditoriaPrecioService {
 
         return auditoriaPrecioRepository.findByTipoEntrada(idTipoEntrada).stream()
                 .map(AuditoriaPrecioService::toResponse).toList();
+    }
+
+    /** Historial de todos los festivales (o de uno): solo lo llama el controlador del administrador. */
+    public List<HistorialPrecioResponse> listarTodos(Long idFestival) {
+        return auditoriaPrecioRepository.findTodos(idFestival).stream()
+                .map(h -> new HistorialPrecioResponse(h.idAuditoria(), h.idTipoEntrada(), h.nombreTipo(),
+                        h.idFestival(), h.nombreFestival(), h.precioAnterior(), h.precioNuevo(),
+                        h.idUsuarioModificador(), h.nombreUsuario(), h.fechaModificacion()))
+                .toList();
     }
 
     private static AuditoriaPrecioResponse toResponse(AuditoriaPrecio auditoria) {

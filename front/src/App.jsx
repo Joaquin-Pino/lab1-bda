@@ -20,6 +20,7 @@ import EditarEntrada from './views/productor/EditarEntrada';
 import LayoutAdministrador from './components/LayoutAdministrador';
 import DashboardAdministrador from './views/administrador/DashboardAdministrador';
 import ControlAcceso from './views/administrador/ControlAcceso';
+import HistorialPrecios from './views/administrador/HistorialPrecios';
 import CrearPresentacion from './views/productor/CrearPresentacion';
 import EditarPresentacion from './views/productor/EditarPresentacion';
 import AuditoriaPrecios from './views/productor/AuditoriaPrecios';
@@ -69,6 +70,7 @@ function App() {
           <Route element={<LayoutAdministrador />}>
             <Route path="/dashboard" element={<DashboardAdministrador />} />
             <Route path="/control-acceso" element={<ControlAcceso />} />
+            <Route path="/historial-precios" element={<HistorialPrecios />} />
           </Route>
         </Route>
 
