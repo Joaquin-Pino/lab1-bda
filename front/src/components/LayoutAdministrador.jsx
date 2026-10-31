@@ -24,6 +24,9 @@ function LayoutAdministrador() {
             <li className="nav-item">
               <NavLink to="/control-acceso" className="nav-link">Control de acceso</NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink to="/historial-precios" className="nav-link">Historial de precios</NavLink>
+            </li>
           </ul>
           <span className="navbar-text text-light me-3">{usuario?.nombre_completo}</span>
           <button onClick={handleLogout} className="btn btn-outline-light btn-sm">
