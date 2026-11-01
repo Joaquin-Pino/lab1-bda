@@ -1,1 +1,5 @@
 .env
+codigo_fuente/db/pruebas/
+codigo_fuente/front/node_modules/
+codigo_fuente/front/dist/
+codigo_fuente/back/target/
