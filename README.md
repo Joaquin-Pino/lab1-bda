@@ -8,23 +8,45 @@ Plataforma full-stack para la administración de eventos, venta de tickets, cont
 
 ## Stack Tecnológico
 
-* Backend: Java (Spring Boot), Spring Security (JWT), Spring Data JDBC (consultas nativas).
+* Backend: Java 21, Spring Boot 3.5, Spring Security con JWT propio (jjwt, HS256) y `JdbcTemplate` con SQL escrito a mano. No se usa ORM (JPA/Hibernate).
 
-* Frontend: React, Vite, Recharts (gráficos), Bootstrap.
+* Frontend: React, Vite, React Router, Axios, Recharts (gráficos), Bootstrap.
 
 * Base de Datos: PostgreSQL 17.
+
+* Documentación de la API: Swagger (OpenAPI), generada automáticamente desde el backend.
 
 * Infraestructura: Docker y Docker Compose.
 
 
 
+## Arquitectura
+
+Aplicación de tres capas, cada una en su propio contenedor:
+
+```
+Frontend (React + Vite)  →  API REST (Spring Boot)  →  PostgreSQL 17
+     :5173                      :8080                      :5432
+```
+
+* **Backend en capas:** `controller → service → repository`, más `model` (filas de la BD), `dto` (formato JSON de entrada y salida), `security`, `config` y `exception`. Las entidades principales tienen su propio controller, service y repository.
+* **Lógica de negocio en PostgreSQL:** las reglas críticas viven en procedimientos almacenados, triggers y funciones, y el backend es una capa delgada que los invoca. Por ejemplo, una compra ejecuta `CALL sp_comprar_entradas(...)`, que valida cupos y genera los tickets dentro de una transacción.
+* **Autenticación y roles:** JWT sin estado, con tres roles (`ASISTENTE`, `PRODUCTOR`, `ADMINISTRADOR`) validados con anotaciones. Un productor solo accede a sus propios recursos: si pide uno ajeno recibe 404, no 403. El administrador no tiene esa restricción.
+* **Errores uniformes:** todas las respuestas de error tienen la forma `{"error": "..."}`. Los errores de la base de datos se traducen a códigos HTTP (por ejemplo, violaciones de restricciones a 400 o 409).
+* **Auditoría:** un trigger registra los cambios de precio de las entradas junto con el usuario que los hizo.
+* **Zona horaria:** el "día" de un festival es la fecha calendario en `America/Santiago`, calculada con `fn_dia_festival`.
+* **Convenciones de la API:** JSON en `snake_case` y fechas en ISO-8601 con zona horaria.
+
+
 ## Estructura del Proyecto
 
-* /back: Código fuente de la API REST en Spring Boot.
+* /codigo_fuente/back: Código fuente de la API REST en Spring Boot.
 
-* /front: Código fuente de la interfaz de usuario en React.
+* /codigo_fuente/front: Código fuente de la interfaz de usuario en React.
 
-* /db: festivales.sql (script único: tablas, triggers, procedimientos, vista materializada y datos de prueba), init_all.sql (punto de entrada de Docker) y pruebas/ (tests SQL).
+* /codigo_fuente/db: festivales.sql (script único: tablas, triggers, procedimientos, vista materializada y datos de prueba), init_all.sql (punto de entrada de Docker).
+
+* /Presentacion: diapositivas de la defensa (PDF).
 
 * compose.yaml: Orquestador de la infraestructura.
 
@@ -74,6 +96,8 @@ Una vez que los contenedores estén en estado "Healthy":
 * Interfaz de Usuario (Frontend): http://localhost:5173
 
 * API REST (Backend): http://localhost:8080
+
+* Documentación de la API (Swagger UI): http://localhost:8080/swagger-ui.html
 
 * Base de Datos: localhost:5432 (valor de DB_PORT en .env)
 
@@ -152,9 +176,15 @@ Eliminarlo no borra los datos, que están en el volumen:
    docker compose up -d
 ```
 
+## Documentación de la API
+
+La API se documenta con **Swagger** (OpenAPI). Con los contenedores levantados, la documentación interactiva está en http://localhost:8080/swagger-ui.html, donde se listan todos los endpoints con sus parámetros, ejemplos de JSON de petición y respuesta, y códigos de error. Desde ahí se pueden probar directamente.
+
+Para los endpoints protegidos: hacer login en `POST /api/auth/login`, copiar el token recibido, pulsar **Authorize** en Swagger UI y pegarlo.
+
 ## Usuarios de Prueba (Datos Semilla)
 
-El script único `db/festivales.sql` crea el esquema y carga los datos de demo. **Todas las cuentas usan la contraseña: 1234**
+El script único `codigo_fuente/db/festivales.sql` crea el esquema y carga los datos de demo. **Todas las cuentas usan la contraseña: 1234**
 
 | Rol | Email |
 | :--- | :--- |
